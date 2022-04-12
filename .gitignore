@@ -1,0 +1,10 @@
+# No documents type .pdf .docx .doc .txt 
+*.pdf
+*.txt
+*.docx
+*.doc
+*.xlsx
+
+# No documentations files
+/documentations
+
