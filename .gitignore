@@ -4,6 +4,7 @@
 *.docx
 *.doc
 *.xlsx
+*.code-workspace
 
 # No documentations files
 /documentations
