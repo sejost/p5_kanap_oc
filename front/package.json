@@ -1,0 +1,19 @@
+{
+  "name": "kanap-frontend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "script.mjs",
+  "dependencies": {
+    "node-fetch": "^3.2.4"
+  },
+  "devDependencies": {
+    "webpack": "^5.72.0",
+    "webpack-cli": "^4.9.2"
+  },
+  "scripts": {
+    "test": "...",
+    "build": "webpack"
+},
+  "author": "",
+  "license": "ISC"
+}

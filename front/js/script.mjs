@@ -1,19 +1,20 @@
-import fetch from 'node-fetch';
-//import { response } from '../../back/app';
+//import fetch from 'node-fetch';
 
 const url = `http://localhost:3000/api/products`;
+let items = document.querySelector('#items');
+
 
 fetch(url).then((res) =>
   res.json().then((data) => {
-    console.log(data.length)
-    console.log(data[1].name)
-    console.log(data[2].name)
-    console.log(data[3].name)
-    console.log(data[4].name)
-    console.log(data[5].name)
-    console.log(data[6].name)
-    console.log(data[7].name)
+    //console.log(data.length);
+    for (let i = 0; i < data.length; i++) {
+      items.appendChild(document.createElement('a'));
+      document.querySelectorAll('#items a')[i].textContent = `Lien n°${i + 1}`;
+    }
+
   })
 );
+
+
 
 
