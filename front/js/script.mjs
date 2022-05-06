@@ -7,6 +7,7 @@ let items = document.querySelector('#items');
 fetch(url).then((res) =>
   res.json().then((data) => {
     //console.log(data[0]._id);
+    //Start of the for loop
     for (let i = 0; i < data.length; i++) {
       //Creation of the Anchors as child of the section
       items.appendChild(document.createElement('a'));
