@@ -2,9 +2,6 @@ let itemImg = document.querySelectorAll('.item__img');
 let currentUrl = new URL(window.location.href);
 let params = new URLSearchParams(currentUrl.search);
 let pageId = params.get("id");
-let myData;
-let colorsNb;
-let myColor;
 
 const apiUrlOneProduct = `http://localhost:3000/api/products/${pageId}`;
 
@@ -14,12 +11,11 @@ const colorsTranslator = (color) => {
         const colorsSplitted = color.split('/');
         let color1 = colorsDictionnary[colorsSplitted[0].toLowerCase()];
         let color2 = colorsDictionnary[colorsSplitted[1].toLowerCase()];
-        myColor = color1 + ' / ' + color2;
+        return color1 + ' / ' + color2;
     }
     else {
-        myColor = colorsDictionnary[color.toLowerCase()];
+        return colorsDictionnary[color.toLowerCase()];
     }
-    return myColor;
 };
 
 const colorsDictionnary = {
@@ -59,12 +55,12 @@ fetch(apiUrlOneProduct)
                     document.querySelectorAll('#colors option')[i + 1].textContent = colorsTranslator(data.colors[i]);
                 }
 
-                const remove1stSelect = () => {
+                const removeFirstSelect = () => {
                     document.querySelector('#colors').removeChild((document.querySelectorAll('#colors option'))[0]);
-                    document.querySelector('#colors').removeEventListener('click', remove1stSelect);
+                    document.querySelector('#colors').removeEventListener('click', removeFirstSelect);
                 };
 
-                document.querySelector('#colors').addEventListener('click', remove1stSelect);
+                document.querySelector('#colors').addEventListener('click', removeFirstSelect);
             }))
 
     .catch((error) => {
