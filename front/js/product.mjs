@@ -6,24 +6,8 @@ let myData;
 let colorsNb;
 let myColor;
 
-const url = `http://localhost:3000/api/products`;
+const apiUrlOneProduct = `http://localhost:3000/api/products/${pageId}`;
 
-
-const getMyData = (productsData) => {
-    let dataIndex;
-    for (let i = 0; i < productsData.length; i++) {
-        if (pageId == productsData[i]._id) {
-            dataIndex = i;
-        }
-    }
-    myData = productsData[dataIndex];
-    return myData;
-}
-
-const nbOfColors = (myData) => {
-    colorsNb = myData.colors.length;
-    return colorsNb;
-}
 
 const colorsTranslator = (color) => {
     if (color.includes('/') == true) {
@@ -54,32 +38,31 @@ const colorsDictionnary = {
     'orange': 'Orange'
 };
 
-const remove1stSelect = () => {
-    document.querySelector('#colors').removeChild((document.querySelectorAll('#colors option'))[0]);
-    document.querySelector('#colors').removeEventListener('click', remove1stSelect);
-};
 
-fetch(url)
+
+fetch(apiUrlOneProduct)
     .then((res) =>
         res.json()
             .then((data) => {
-                getMyData(data);
-                nbOfColors(myData);
-
                 document.querySelector('article .item__img').appendChild(document.createElement('img'));
                 let itemImg = document.querySelector('.item__img img');
-                itemImg.setAttribute('src', myData.imageUrl)
-                itemImg.setAttribute('alt', myData.altTxt);
+                itemImg.setAttribute('src', data.imageUrl)
+                itemImg.setAttribute('alt', data.altTxt);
 
-                document.querySelector('#title').textContent = myData.name;
-                document.querySelector('#price').textContent = myData.price;
-                document.querySelector('#description').textContent = myData.description;
+                document.querySelector('#title').textContent = data.name;
+                document.querySelector('#price').textContent = data.price;
+                document.querySelector('#description').textContent = data.description;
 
-                for (let i = 0; i < colorsNb; i++) {
+                for (let i = 0; i < data.colors.length; i++) {
                     document.querySelector('#colors').appendChild(document.createElement('option'));
-                    document.querySelectorAll('#colors option')[i + 1].setAttribute('value', myData.colors[i]);
-                    document.querySelectorAll('#colors option')[i + 1].textContent = colorsTranslator(myData.colors[i]);
+                    document.querySelectorAll('#colors option')[i + 1].setAttribute('value', data.colors[i]);
+                    document.querySelectorAll('#colors option')[i + 1].textContent = colorsTranslator(data.colors[i]);
                 }
+
+                const remove1stSelect = () => {
+                    document.querySelector('#colors').removeChild((document.querySelectorAll('#colors option'))[0]);
+                    document.querySelector('#colors').removeEventListener('click', remove1stSelect);
+                };
 
                 document.querySelector('#colors').addEventListener('click', remove1stSelect);
             }))
