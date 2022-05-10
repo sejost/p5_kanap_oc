@@ -2,23 +2,33 @@ let itemImg = document.querySelectorAll('.item__img');
 let currentUrl = new URL(window.location.href);
 let params = new URLSearchParams(currentUrl.search);
 let pageId = params.get("id");
+let myData;
+let colorsNb;
 
-const findIndex = (dataName) => {
+const url = `http://localhost:3000/api/products`;
+
+
+const getMyData = (productsData) => {
     let dataIndex;
-    for (let i = 0; i < dataName.length; i++) {
-        if (pageId == dataName[i]._id) {
+    for (let i = 0; i < productsData.length; i++) {
+        if (pageId == productsData[i]._id) {
             dataIndex = i;
         }
     }
-    return dataIndex;
+    myData = productsData[dataIndex];
+    return myData;
 }
 
-const nbOfColors = (dataName) => {
-    let colorsNb = dataName[findIndex(dataName)].colors.length;
+const nbOfColors = (myData) => {
+    colorsNb = myData.colors.length;
     return colorsNb;
 }
 
-let colorsDictionnary = {
+const colorsTranslator = (color) => {
+
+}
+
+const colorsDictionnary = {
     'Blue': 'bleue',
     'White': 'blanc',
     'Black': 'noir',
@@ -34,36 +44,36 @@ let colorsDictionnary = {
     'orange': 'orange'
 };
 
-//const data = JSON.parse(res);
-
-
-const removeChoice = () => {
+const remove1stSelect = () => {
     document.querySelector('#colors').removeChild((document.querySelectorAll('#colors option'))[0]);
-    document.querySelector('#colors').removeEventListener('click', removeChoice);
+    document.querySelector('#colors').removeEventListener('click', remove1stSelect);
 };
 
-const url = `http://localhost:3000/api/products`;
 fetch(url)
     .then((res) =>
-        res.json().then((data) => {
-            document.querySelector('article .item__img').appendChild(document.createElement('img'));
-            let itemImg = document.querySelector('.item__img img');
-            itemImg.setAttribute('src', data[findIndex(data)].imageUrl)
-            itemImg.setAttribute('alt', data[findIndex(data)].altTxt);
+        res.json()
+            .then((data) => {
+                getMyData(data);
+                nbOfColors(myData);
 
-            document.querySelector('#title').textContent = data[findIndex(data)].name;
-            document.querySelector('#price').textContent = data[findIndex(data)].price;
-            document.querySelector('#description').textContent = data[findIndex(data)].description;
+                document.querySelector('article .item__img').appendChild(document.createElement('img'));
+                let itemImg = document.querySelector('.item__img img');
+                itemImg.setAttribute('src', myData.imageUrl)
+                itemImg.setAttribute('alt', myData.altTxt);
 
-            for (let i = 0; i < nbOfColors(data); i++) {
-                document.querySelector('#colors').appendChild(document.createElement('option'));
-                document.querySelectorAll('#colors option')[i + 1].setAttribute('value', data[findIndex(data)].colors[i]);
-                console.log(colorsDictionnary[(data[findIndex(data)].colors[i])]);
-                document.querySelectorAll('#colors option')[i + 1].textContent = colorsDictionnary[data[findIndex(data)].colors[i]];
-            }
+                document.querySelector('#title').textContent = myData.name;
+                document.querySelector('#price').textContent = myData.price;
+                document.querySelector('#description').textContent = myData.description;
 
-            document.querySelector('#colors').addEventListener('click', removeChoice);
-        }))
+                for (let i = 0; i < colorsNb; i++) {
+                    document.querySelector('#colors').appendChild(document.createElement('option'));
+                    document.querySelectorAll('#colors option')[i + 1].setAttribute('value', myData.colors[i]);
+                    document.querySelectorAll('#colors option')[i + 1].textContent = colorsDictionnary[myData.colors[i]];
+                }
+
+                document.querySelector('#colors').addEventListener('click', remove1stSelect);
+            }))
+
     .catch((error) => {
         console.log(error)
     });
