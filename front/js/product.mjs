@@ -4,6 +4,7 @@ let params = new URLSearchParams(currentUrl.search);
 let pageId = params.get("id");
 let myData;
 let colorsNb;
+let myColor;
 
 const url = `http://localhost:3000/api/products`;
 
@@ -25,23 +26,32 @@ const nbOfColors = (myData) => {
 }
 
 const colorsTranslator = (color) => {
-
-}
+    if (color.includes('/') == true) {
+        const colorsSplitted = color.split('/');
+        let color1 = colorsDictionnary[colorsSplitted[0].toLowerCase()];
+        let color2 = colorsDictionnary[colorsSplitted[1].toLowerCase()];
+        myColor = color1 + '/' + color2;
+    }
+    else {
+        myColor = colorsDictionnary[color.toLowerCase()];
+    }
+    return myColor;
+};
 
 const colorsDictionnary = {
-    'Blue': 'bleue',
-    'White': 'blanc',
-    'Black': 'noir',
-    'Green': 'vert',
-    'Red': 'rouge',
-    'Pink': 'rose',
-    'grey': 'gris',
-    'purple': 'violet',
-    'navy': 'marine',
-    'silver': 'argent',
-    'brown': 'marron',
-    'yellow': 'jaune',
-    'orange': 'orange'
+    'blue': 'Bleu',
+    'white': 'Blanc',
+    'black': 'Noir',
+    'green': 'Vert',
+    'red': 'Rouge',
+    'pink': 'Rose',
+    'grey': 'Gris',
+    'purple': 'Violet',
+    'navy': 'Marine',
+    'silver': 'Argent',
+    'brown': 'Marron',
+    'yellow': 'Jaune',
+    'orange': 'Orange'
 };
 
 const remove1stSelect = () => {
@@ -68,7 +78,7 @@ fetch(url)
                 for (let i = 0; i < colorsNb; i++) {
                     document.querySelector('#colors').appendChild(document.createElement('option'));
                     document.querySelectorAll('#colors option')[i + 1].setAttribute('value', myData.colors[i]);
-                    document.querySelectorAll('#colors option')[i + 1].textContent = colorsDictionnary[myData.colors[i]];
+                    document.querySelectorAll('#colors option')[i + 1].textContent = colorsTranslator(myData.colors[i]);
                 }
 
                 document.querySelector('#colors').addEventListener('click', remove1stSelect);
