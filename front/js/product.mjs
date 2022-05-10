@@ -30,7 +30,7 @@ const colorsTranslator = (color) => {
         const colorsSplitted = color.split('/');
         let color1 = colorsDictionnary[colorsSplitted[0].toLowerCase()];
         let color2 = colorsDictionnary[colorsSplitted[1].toLowerCase()];
-        myColor = color1 + '/' + color2;
+        myColor = color1 + ' / ' + color2;
     }
     else {
         myColor = colorsDictionnary[color.toLowerCase()];
