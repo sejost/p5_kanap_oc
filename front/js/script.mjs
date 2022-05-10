@@ -35,7 +35,10 @@ fetch(url).then((res) =>
       paragraphNb.textContent = data[i].description;
     }
   })
-);
+)
+  .catch((error) => {
+    console.log(error)
+  });
 
 
 
