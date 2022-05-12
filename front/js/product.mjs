@@ -61,8 +61,47 @@ fetch(apiUrlOneProduct)
                 };
 
                 document.querySelector('#colors').addEventListener('click', removeFirstSelect);
+
+                document.querySelector('#addToCart').addEventListener('click', () => {
+                    let cart = [];
+                    let cartValue = document.querySelector('#quantity').value;
+                    let colorValue = document.querySelector('#colors').value;
+                    let keyName = data.name + ' ' + colorValue;
+                    const addNewCart = () => {
+                        cart.push(pageId);
+                        cart.push(colorValue);
+                        cart.push(cartValue);
+                        localStorage.setItem(data.name + ' ' + colorValue, cart);
+                        alert(`Vos ${cartValue} articles ont bien été ajouté au panier`)
+                    }
+
+                    const addSomeCart = () => {
+                        let idValues = localStorage.getItem(keyName);
+                        const cartItemSplitted = idValues.split(',');
+                        localStorage.removeItem(keyName)
+                        cart.push(pageId);
+                        cart.push(colorValue);
+                        cart.push(parseInt(cartValue) + parseInt(cartItemSplitted[2]));
+                        localStorage.setItem(keyName, cart);
+                        alert(`Vos ${cartValue} articles ont bien été ajouté au panier`)
+                    }
+
+                    if (cartValue == 0 || cartValue > 100) {
+                        alert(`Merci d'indiquer un nombre d'article compris entre 1 et 100`);
+                    }
+                    else if (colorValue == '') {
+                        alert(`Merci de préciser la couleur souhaitée de l'article`);
+                    }
+                    else if (localStorage.getItem(keyName) != null) {
+                        addSomeCart();
+
+                    }
+                    else {
+                        addNewCart();
+                    }
+                })
             }))
 
     .catch((error) => {
-        console.log(error)
+        console.error(error)
     });
