@@ -1,14 +1,13 @@
 //import fetch from 'node-fetch';
 
-const apiUrlAllProduct = `http://localhost:3000/api/products`;
+const apiUrlAllProducts = `http://localhost:3000/api/products/`;
 let items = document.querySelector('#items');
 
 
-fetch(apiUrlAllProduct)
+fetch(apiUrlAllProducts)
   .then((res) =>
     res.json()
       .then((data) => {
-        //console.log(data[0]._id);
         //Start of the for loop
         for (let i = 0; i < data.length; i++) {
           //Creation of the Anchors as child of the section
@@ -39,7 +38,7 @@ fetch(apiUrlAllProduct)
       })
   )
   .catch((error) => {
-    console.log(error)
+    console.error(error)
   });
 
 

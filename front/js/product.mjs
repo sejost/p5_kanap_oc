@@ -9,8 +9,8 @@ const apiUrlOneProduct = `http://localhost:3000/api/products/${pageId}`;
 const colorsTranslator = (color) => {
     if (color.includes('/') == true) {
         const colorsSplitted = color.split('/');
-        let color1 = colorsDictionnary[colorsSplitted[0].toLowerCase()];
-        let color2 = colorsDictionnary[colorsSplitted[1].toLowerCase()];
+        const color1 = colorsDictionnary[colorsSplitted[0].toLowerCase()];
+        const color2 = colorsDictionnary[colorsSplitted[1].toLowerCase()];
         return color1 + ' / ' + color2;
     }
     else {
