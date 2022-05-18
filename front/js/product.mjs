@@ -86,7 +86,7 @@ fetch(apiUrlOneProduct)
                         alert(`Vos ${cartValue} articles ont bien été ajouté au panier`)
                     }
 
-                    if (cartValue == 0 || cartValue > 100) {
+                    if (cartValue == 0 || cartValue > 100 || cartValue < 0) {
                         alert(`Merci d'indiquer un nombre d'article compris entre 1 et 100`);
                     }
                     else if (colorValue == '') {
