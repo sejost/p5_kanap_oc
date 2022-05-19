@@ -78,27 +78,45 @@ const apiAsync = async () => {
         }
       }
 
+      let priceCalcul = [];
+      priceCalcul.push(data.price * itemQuantity);
+
+      let articleCalcul = []
+      articleCalcul.push(itemQuantity);
+
+
       document.querySelector(`#articleNb${i} .cart__item__content__settings__quantity input`).addEventListener('change', () => {
+
         if (articleQty.value == 0) {
           removeItem();
-          location.reload();
         }
         else if (articleQty.value < 0 || articleQty.value > 100) {
           alert(`Merci d'indiquer un nombre d'article compris entre 1 et 100`);
-          location.reload();
+          articleQty.value = itemQuantity;
         }
         else if (articleQty.value == '') {
           alert(`Quantité incorrect`);
-          location.reload();
+          articleQty.value = itemQuantity;
         }
         else {
-          console.log('Changement !')
           itemQuantity = articleQty.value;
-          console.log(itemQuantity);
           localStorage.removeItem(keyName);
           cart = [itemId, itemColor, parseFloat(itemQuantity)];
           localStorage.setItem(keyName, cart);
-          location.reload();
+
+          priceCalcul.push(data.price * itemQuantity); //insert the new price into the array
+          totalPrice += priceCalcul[0] - 2 * (priceCalcul[0]) + priceCalcul[1];
+          document.querySelector('.cart__price #totalPrice').textContent = totalPrice;
+
+          priceCalcul = [];
+          priceCalcul.push(data.price * itemQuantity); // reinit the priceCalcul value
+
+          articleCalcul.push(itemQuantity); //insert the new article value into the array
+          totalArticle += parseFloat(articleCalcul[0]) - 2 * (parseFloat(articleCalcul[0])) + parseFloat(articleCalcul[1]);
+          document.querySelector('.cart__price #totalQuantity').textContent = totalArticle;
+
+          articleCalcul = [];
+          articleCalcul.push(itemQuantity); // reinit the articleCalcul value
         }
       });
 
@@ -107,8 +125,6 @@ const apiAsync = async () => {
       allPrices.push(data.price * itemQuantity);
       allArticles.push(itemQuantity);
     }
-
-
 
     for (i = 0; i < allPrices.length; i++) {
       totalPrice += allPrices[i];
