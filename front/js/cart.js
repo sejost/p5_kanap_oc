@@ -138,7 +138,63 @@ const apiAsync = async () => {
     console.error(error);
   }
 }
-
 apiAsync();
+
+const regexFirstName = /[a-zA-ZàáâćèéêëîïòóôùúûüçÀÁÂÄÈÉÊËÎÏÔÖÛÜÇŒÆ '-]+$/
+const regexLastName = /[a-zA-ZàáâćèéêëîïòóôùúûüçÀÁÂÄÈÉÊËÎÏÔÖÛÜÇŒÆ '-]+$/
+const regexCity = /[a-zA-ZàáâćèéêëîïòóôùúûüçÀÁÂÄÈÉÊËÎÏÔÖÛÜÇŒÆ '-]+$/
+const regexEmail = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/
+const regexAddress = /^[A-Za-z0-9'\.\-\s\,]/
+
+const firstName = document.querySelector('input#firstName');
+const lastName = document.querySelector('input#lastName');
+const address = document.querySelector('input#address');
+const city = document.querySelector('input#city');
+const email = document.querySelector('input#email');
+
+function checkSessionStorage(identifier, keyName) {
+  if (sessionStorage.getItem(keyName) === null || sessionStorage.getItem(keyName).length == 0 || sessionStorage.getItem(keyName) === "") {
+    identifier.value = "";
+  }
+  else {
+    identifier.value = sessionStorage.getItem(keyName);
+  }
+  console.log(identifier.value);
+}
+
+checkSessionStorage(firstName, 'firstName');
+checkSessionStorage(lastName, 'lastName');
+checkSessionStorage(address, 'address');
+checkSessionStorage(city, 'city');
+checkSessionStorage(email, 'email');
+
+function regexTest(rxIdentifier, identifier, idSelector, keyName) {
+  if (rxIdentifier.test(identifier.value) != true) {
+    document.querySelector(idSelector).textContent = `${identifier.value} n'est pas valide !`;
+    return false;
+  }
+  else {
+    document.querySelector(idSelector).textContent = "";
+    sessionStorage.removeItem(keyName);
+    sessionStorage.setItem(keyName, identifier.value)
+    return true;
+  }
+}
+
+
+document.querySelector('#order').addEventListener('click', (evt) => {
+  evt.preventDefault();
+  if (regexTest(regexFirstName, firstName, '#firstNameErrorMsg', 'firstName') &&
+    regexTest(regexLastName, lastName, '#lastNameErrorMsg', 'lastName') &&
+    regexTest(regexCity, city, '#cityErrorMsg', 'city') &&
+    regexTest(regexEmail, email, '#emailErrorMsg', 'email') &&
+    regexTest(regexAddress, address, '#addressErrorMsg', 'address')) {
+    console.log('ok')
+  }
+  else {
+    console.log('nok')
+  }
+
+})
 
 
