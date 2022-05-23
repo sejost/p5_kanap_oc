@@ -5,6 +5,34 @@ let totalPrice = 0;
 let allArticles = [];
 let totalArticle = 0;
 
+const colorsTranslator = (color) => {
+  if (color.includes('/') == true) {
+    const colorsSplitted = color.split('/');
+    const color1 = colorsDictionnary[colorsSplitted[0].toLowerCase()];
+    const color2 = colorsDictionnary[colorsSplitted[1].toLowerCase()];
+    return color1 + ' / ' + color2;
+  }
+  else {
+    return colorsDictionnary[color.toLowerCase()];
+  }
+};
+
+const colorsDictionnary = {
+  'blue': 'Bleu',
+  'white': 'Blanc',
+  'black': 'Noir',
+  'green': 'Vert',
+  'red': 'Rouge',
+  'pink': 'Rose',
+  'grey': 'Gris',
+  'purple': 'Violet',
+  'navy': 'Marine',
+  'silver': 'Argent',
+  'brown': 'Marron',
+  'yellow': 'Jaune',
+  'orange': 'Orange'
+};
+
 const apiAsync = async () => {
   try {
     for (let i = 0; i < localStorage.length; ++i) {
@@ -47,7 +75,7 @@ const apiAsync = async () => {
       document.querySelector(`#articleNb${i} .cart__item__content__description`).appendChild(document.createElement('p'));
       document.querySelector(`#articleNb${i} .cart__item__content__description`).appendChild(document.createElement('p'));
       document.querySelector(`#articleNb${i} .cart__item__content__description h2`).textContent = data.name;
-      document.querySelectorAll(`#articleNb${i} .cart__item__content__description p`)[0].textContent = itemColor;
+      document.querySelectorAll(`#articleNb${i} .cart__item__content__description p`)[0].textContent = colorsTranslator(itemColor);
       document.querySelectorAll(`#articleNb${i} .cart__item__content__description p`)[1].textContent = `${data.price} € / Unité`;
 
       document.querySelector(`#articleNb${i} .cart__item__content__settings`).appendChild(document.createElement('div'));
@@ -105,7 +133,7 @@ const apiAsync = async () => {
           localStorage.setItem(keyName, cart);
 
           priceCalcul.push(data.price * itemQuantity); //insert the new price into the array
-          totalPrice += priceCalcul[0] - 2 * (priceCalcul[0]) + priceCalcul[1];
+          totalPrice += -priceCalcul[0] + priceCalcul[1];
           document.querySelector('.cart__price #totalPrice').textContent = totalPrice;
 
           priceCalcul = [];
@@ -140,11 +168,11 @@ const apiAsync = async () => {
 }
 apiAsync();
 
-const regexFirstName = /[a-zA-ZàáâćèéêëîïòóôùúûüçÀÁÂÄÈÉÊËÎÏÔÖÛÜÇŒÆ '-]+$/
-const regexLastName = /[a-zA-ZàáâćèéêëîïòóôùúûüçÀÁÂÄÈÉÊËÎÏÔÖÛÜÇŒÆ '-]+$/
-const regexCity = /[a-zA-ZàáâćèéêëîïòóôùúûüçÀÁÂÄÈÉÊËÎÏÔÖÛÜÇŒÆ '-]+$/
-const regexEmail = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/
-const regexAddress = /^[A-Za-z0-9'\.\-\s\,]/
+//const regexFirstName = /[a-zA-ZàáâćèéêëîïòóôùúûüçÀÁÂÄÈÉÊËÎÏÔÖÛÜÇŒÆ '-]+$/;
+//const regexLastName = /[a-zA-ZàáâćèéêëîïòóôùúûüçÀÁÂÄÈÉÊËÎÏÔÖÛÜÇŒÆ '-]+$/;
+//const regexCity = /[a-zA-ZàáâćèéêëîïòóôùúûüçÀÁÂÄÈÉÊËÎÏÔÖÛÜÇŒÆ '-]+$/;
+//const regexAddress = /^[A-Za-z0-9'\.\-\s\,]/;
+const regexEmail = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
 
 const firstName = document.querySelector('input#firstName');
 const lastName = document.querySelector('input#lastName');
@@ -159,7 +187,6 @@ function checkSessionStorage(identifier, keyName) {
   else {
     identifier.value = sessionStorage.getItem(keyName);
   }
-  console.log(identifier.value);
 }
 
 checkSessionStorage(firstName, 'firstName');
@@ -168,6 +195,21 @@ checkSessionStorage(address, 'address');
 checkSessionStorage(city, 'city');
 checkSessionStorage(email, 'email');
 
+
+/*function regexTest(rxIdentifier, identifier, idSelector, keyName) {
+  if (rxIdentifier.test(identifier.value) != true) {
+    document.querySelector(idSelector).textContent = `${identifier.value} n'est pas valide !`;
+    return false;
+  }
+  else {
+    document.querySelector(idSelector).textContent = "";
+    sessionStorage.removeItem(keyName);
+    sessionStorage.setItem(keyName, identifier.value)
+    return true;
+  }
+}*/
+
+/*
 function regexTest(rxIdentifier, identifier, idSelector, keyName) {
   if (rxIdentifier.test(identifier.value) != true) {
     document.querySelector(idSelector).textContent = `${identifier.value} n'est pas valide !`;
@@ -179,16 +221,53 @@ function regexTest(rxIdentifier, identifier, idSelector, keyName) {
     sessionStorage.setItem(keyName, identifier.value)
     return true;
   }
+}*/
+
+function validTest(identifier, idSelector, keyName) {
+  if (identifier.value !== "") {
+    console.log(identifier.value + ' ok')
+    sessionStorage.removeItem(keyName);
+    sessionStorage.setItem(keyName, identifier.value)
+    return true;
+  }
+  else {
+    console.log(identifier.value + ' nok')
+    document.querySelector(idSelector).textContent = `${identifier.value} n'est pas valide !`;
+    return false;
+  }
+}
+
+function validEmail() {
+  if (regexEmail.test(email.value) != true) {
+    console.log(email.value + ' nok')
+    document.querySelector(`#emailErrorMsg`).textContent = `${email.value} n'est pas valide !`;
+    return false
+  }
+  else {
+    console.log(email.value + ' ok')
+    sessionStorage.removeItem('email');
+    sessionStorage.setItem('email', email.value)
+    return true;
+  }
 }
 
 
 document.querySelector('#order').addEventListener('click', (evt) => {
   evt.preventDefault();
-  if (regexTest(regexFirstName, firstName, '#firstNameErrorMsg', 'firstName') &&
+
+  /*if (regexTest(regexFirstName, firstName, '#firstNameErrorMsg', 'firstName') &&
     regexTest(regexLastName, lastName, '#lastNameErrorMsg', 'lastName') &&
     regexTest(regexCity, city, '#cityErrorMsg', 'city') &&
     regexTest(regexEmail, email, '#emailErrorMsg', 'email') &&
     regexTest(regexAddress, address, '#addressErrorMsg', 'address')) {
+    console.log('ok')
+  }*/
+
+  if (validTest(firstName, '#firstNameErrorMsg', 'firstName')
+    && validTest(lastName, '#lastNameErrorMsg', 'lastName')
+    && validTest(city, '#cityErrorMsg', 'city')
+    && validTest(address, '#addressErrorMsg', 'address')
+    && validEmail()) {
     console.log('ok')
   }
   else {
