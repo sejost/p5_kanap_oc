@@ -262,15 +262,16 @@ function sendToServer() {
     .then((data) => {
       orderId = data.orderId;
       console.log(data.orderId);
+      // Si l'orderId a bien été récupéré, on redirige l'utilisateur vers la page de Confirmation
+      if (orderId != "") {
+        location.href = "confirmation.html?id=" + orderId;
+      }
+      else {
+        console.log(`OrderId [${orderId}] pas bon`)
+      }
     });
 
-  // Si l'orderId a bien été récupéré, on redirige l'utilisateur vers la page de Confirmation
-  if (orderId != "") {
-    location.href = "confirmation.html?id=" + orderId;
-  }
-  else {
-    console.log(`OrderId [${orderId}] pas bon`)
-  }
+
 }
 
 document.querySelector('#order').addEventListener('click', (evt) => {
