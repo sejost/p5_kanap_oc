@@ -4,6 +4,8 @@ let allPrices = [];
 let totalPrice = 0;
 let allArticles = [];
 let totalArticle = 0;
+let products = [];
+let orderId = "";
 
 const colorsTranslator = (color) => {
   if (color.includes('/') == true) {
@@ -48,7 +50,6 @@ const apiAsync = async () => {
       let data = await response.json();
 
       const keyName = data.name + ' ' + itemColor;
-
 
       document.querySelector('#cart__items').appendChild(document.createElement('article'));
       document.querySelectorAll('article')[i].setAttribute('id', `articleNb${i}`)
@@ -98,11 +99,18 @@ const apiAsync = async () => {
       document.querySelector(`#articleNb${i} .cart__item__content__settings__delete p`).setAttribute('class', 'deleteItem');
       document.querySelector(`#articleNb${i} .cart__item__content__settings__delete p`).textContent = 'Supprimer';
 
+      products.push(itemId);
+
       const removeItem = () => {
         let promptAnswer = (confirm(`Êtes vous sûr de vouloir supprimer cet article de votre panier ?`));
         if (promptAnswer) {
           localStorage.removeItem(keyName);
           location.reload();
+          products.splice(i, 1)
+          console.log(products)
+        }
+        else {
+          articleQty.setAttribute('value', `${itemQuantity}`);
         }
       }
 
@@ -152,6 +160,7 @@ const apiAsync = async () => {
 
       allPrices.push(data.price * itemQuantity);
       allArticles.push(itemQuantity);
+
     }
 
     for (i = 0; i < allPrices.length; i++) {
@@ -168,10 +177,13 @@ const apiAsync = async () => {
 }
 apiAsync();
 
-//const regexFirstName = /[a-zA-ZàáâćèéêëîïòóôùúûüçÀÁÂÄÈÉÊËÎÏÔÖÛÜÇŒÆ '-]+$/;
-//const regexLastName = /[a-zA-ZàáâćèéêëîïòóôùúûüçÀÁÂÄÈÉÊËÎÏÔÖÛÜÇŒÆ '-]+$/;
-//const regexCity = /[a-zA-ZàáâćèéêëîïòóôùúûüçÀÁÂÄÈÉÊËÎÏÔÖÛÜÇŒÆ '-]+$/;
-//const regexAddress = /^[A-Za-z0-9'\.\-\s\,]/;
+/* // -- Const dedicated to Regex Verification Method -- //
+const regexFirstName = /[a-zA-ZàáâćèéêëîïòóôùúûüçÀÁÂÄÈÉÊËÎÏÔÖÛÜÇŒÆ '-]+$/;
+const regexLastName = /[a-zA-ZàáâćèéêëîïòóôùúûüçÀÁÂÄÈÉÊËÎÏÔÖÛÜÇŒÆ '-]+$/;
+const regexCity = /[a-zA-ZàáâćèéêëîïòóôùúûüçÀÁÂÄÈÉÊËÎÏÔÖÛÜÇŒÆ '-]+$/;
+const regexAddress = /^[A-Za-z0-9'\.\-\s\,]/;
+*/
+
 const regexEmail = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
 
 const firstName = document.querySelector('input#firstName');
@@ -195,21 +207,7 @@ checkSessionStorage(address, 'address');
 checkSessionStorage(city, 'city');
 checkSessionStorage(email, 'email');
 
-
-/*function regexTest(rxIdentifier, identifier, idSelector, keyName) {
-  if (rxIdentifier.test(identifier.value) != true) {
-    document.querySelector(idSelector).textContent = `${identifier.value} n'est pas valide !`;
-    return false;
-  }
-  else {
-    document.querySelector(idSelector).textContent = "";
-    sessionStorage.removeItem(keyName);
-    sessionStorage.setItem(keyName, identifier.value)
-    return true;
-  }
-}*/
-
-/*
+/* //-- Regex Function verification --
 function regexTest(rxIdentifier, identifier, idSelector, keyName) {
   if (rxIdentifier.test(identifier.value) != true) {
     document.querySelector(idSelector).textContent = `${identifier.value} n'est pas valide !`;
@@ -225,13 +223,11 @@ function regexTest(rxIdentifier, identifier, idSelector, keyName) {
 
 function validTest(identifier, idSelector, keyName) {
   if (identifier.value !== "") {
-    console.log(identifier.value + ' ok')
     sessionStorage.removeItem(keyName);
     sessionStorage.setItem(keyName, identifier.value)
     return true;
   }
   else {
-    console.log(identifier.value + ' nok')
     document.querySelector(idSelector).textContent = `${identifier.value} n'est pas valide !`;
     return false;
   }
@@ -239,23 +235,49 @@ function validTest(identifier, idSelector, keyName) {
 
 function validEmail() {
   if (regexEmail.test(email.value) != true) {
-    console.log(email.value + ' nok')
     document.querySelector(`#emailErrorMsg`).textContent = `${email.value} n'est pas valide !`;
     return false
   }
   else {
-    console.log(email.value + ' ok')
     sessionStorage.removeItem('email');
     sessionStorage.setItem('email', email.value)
     return true;
   }
 }
 
+let contact = {};
+
+function sendToServer() {
+  const sendToServer = fetch("http://localhost:3000/api/products/order", {
+    method: "POST",
+    body: JSON.stringify({ contact, products }),
+    headers: {
+      "Content-Type": "application/json",
+    },
+  })
+    // Récupération et stockage de la réponse de l'API (orderId)
+    .then((response) => {
+      return response.json();
+    })
+    .then((data) => {
+      orderId = data.orderId;
+      console.log(data.orderId);
+    });
+
+  // Si l'orderId a bien été récupéré, on redirige l'utilisateur vers la page de Confirmation
+  if (orderId != "") {
+    location.href = "confirmation.html?id=" + orderId;
+  }
+  else {
+    console.log(`OrderId [${orderId}] pas bon`)
+  }
+}
 
 document.querySelector('#order').addEventListener('click', (evt) => {
   evt.preventDefault();
 
-  /*if (regexTest(regexFirstName, firstName, '#firstNameErrorMsg', 'firstName') &&
+  /* //-- Part of Code include Regex verification instead of classic method verification -- 
+  if (regexTest(regexFirstName, firstName, '#firstNameErrorMsg', 'firstName') &&
     regexTest(regexLastName, lastName, '#lastNameErrorMsg', 'lastName') &&
     regexTest(regexCity, city, '#cityErrorMsg', 'city') &&
     regexTest(regexEmail, email, '#emailErrorMsg', 'email') &&
@@ -268,6 +290,15 @@ document.querySelector('#order').addEventListener('click', (evt) => {
     && validTest(city, '#cityErrorMsg', 'city')
     && validTest(address, '#addressErrorMsg', 'address')
     && validEmail()) {
+
+    contact.firstName = firstName.value;
+    contact.lastName = lastName.value;
+    contact.city = city.value;
+    contact.address = address.value;
+    contact.email = email.value;
+    console.log(contact)
+    console.log(contact.firstName)
+    sendToServer()
     console.log('ok')
   }
   else {
