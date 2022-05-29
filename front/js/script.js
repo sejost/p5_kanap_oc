@@ -35,6 +35,7 @@ const apiAsync = async () => {
       paragraphNb.textContent = data[i].description;
     }
   }
+  /* -- Catch and display error message if so --*/
   catch {
     console.error(error);
     alert(`Erreur : ${error.message}, lors du chargement de la page`);

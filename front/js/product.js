@@ -77,16 +77,16 @@ const apiAsync = async () => {
            -- Push information in an array the cart information and add it into the local storage then display a confirmation message --*/
         document.querySelector('#addToCart').addEventListener('click', () => {
             let cart = [];
-            let cartValue = document.querySelector('#quantity').value;
-            let colorValue = document.querySelector('#colors').value;
-            let keyName = data.name + ' ' + colorValue;
+            let productQty = document.querySelector('#quantity').value;
+            let productColor = document.querySelector('#colors').value;
+            let keyName = data.name + ' ' + productColor;
 
             /* -- Function create a cart with new products-- */
             const newCart = () => {
                 cart.push(pageId);
-                cart.push(colorValue);
-                cart.push(cartValue);
-                localStorage.setItem(data.name + ' ' + colorValue, cart);
+                cart.push(productColor);
+                cart.push(productQty);
+                localStorage.setItem(data.name + ' ' + productColor, cart);
                 displayResult();
             }
 
@@ -96,16 +96,16 @@ const apiAsync = async () => {
                 const cartItemSplitted = idValues.split(',');
                 localStorage.removeItem(keyName)
                 cart.push(pageId);
-                cart.push(colorValue);
-                cart.push(parseInt(cartValue) + parseInt(cartItemSplitted[2]));
+                cart.push(productColor);
+                cart.push(parseInt(productQty) + parseInt(cartItemSplitted[2]));
                 localStorage.setItem(keyName, cart);
                 displayResult();
             }
 
             /* -- Function to display the confirmation adding to cart message-- */
             const displayResult = () => {
-                if (cartValue > 1) {
-                    alert(`Vos ${cartValue} articles ont bien été ajoutés au panier`)
+                if (productQty > 1) {
+                    alert(`Vos ${productQty} articles ont bien été ajoutés au panier`)
                 }
                 else {
                     alert(`Votre article a bien été ajouté au panier`)
@@ -113,10 +113,10 @@ const apiAsync = async () => {
             }
 
             /* -- Main condition in the event listener to be authorized to add product in a cart -- */
-            if (cartValue == 0 || cartValue > 100 || cartValue < 0) {
+            if (productQty == 0 || productQty > 100 || productQty < 0) {
                 alert(`Merci d'indiquer un nombre d'article compris entre 1 et 100`);
             }
-            else if (colorValue == '') {
+            else if (productColor == '') {
                 alert(`Merci de préciser la couleur souhaitée de l'article`);
             }
             else if (localStorage.getItem(keyName) != null) {
@@ -127,6 +127,7 @@ const apiAsync = async () => {
             }
         })
     }
+    /* -- Catch and display error message if so --*/
     catch {
         console.error(error)
         alert(`Erreur : ${error.message}, lors du chargement de la page`)
