@@ -1,14 +1,13 @@
+/* -------------------------------- 1st Part of the Code -------------------------------- */
+/* -- This code Part focus on get and displaying the main informations and interact with it -- */
+
 /* -- Variable Init Declarations -- */
 const getAllProducts = `http://localhost:3000/api/products/`;
 let allPrices = [];
 let totalPrice = 0;
 let allArticles = [];
 let totalArticle = 0;
-
-let orderId = "";
 let products = [];
-let contact = {};
-
 
 /* -- Variable Dictionnary of english colors to french -- */
 const colorsDictionnary = {
@@ -30,18 +29,18 @@ const colorsDictionnary = {
 /* -- Function that convert the color format and translate it into french -- */
 const colorsTranslator = (color) => {
   if (!color.includes('/')) {
-      return colorsDictionnary[color.toLowerCase()];
+    return colorsDictionnary[color.toLowerCase()];
   }
   else {
-      /* -- If the colors contain a '/' translate separatly each color then add each other into a new translated string-- */
-      const colorsSplitted = color.split('/');
-      let colors = [];
-      let colorsAdded;
-      for (i = 0; i < colorsSplitted.length; i++) {
-          colors[i] = colorsDictionnary[colorsSplitted[i].toLowerCase()];
-          colorsAdded = ` ${colors[i - 1]} / ${colors[i]}`;
-      }
-      return colorsAdded;
+    /* -- If the colors contain a '/' translate separatly each color then add each other into a new translated string-- */
+    const colorsSplitted = color.split('/');
+    let colors = [];
+    let colorsAdded;
+    for (i = 0; i < colorsSplitted.length; i++) {
+      colors[i] = colorsDictionnary[colorsSplitted[i].toLowerCase()];
+      colorsAdded = ` ${colors[i - 1]} / ${colors[i]}`;
+    }
+    return colorsAdded;
   }
 };
 
@@ -147,13 +146,9 @@ const apiAsync = async () => {
         if (cartItemQty.value == 0) {
           removeItem();
         }
-        else if (cartItemQty.value < 0 || cartItemQty.value > 100) {
+        else if (cartItemQty.value < 0 || cartItemQty.value > 100 || cartItemQty.value == '') {
+          cartItemQty.value = productQty;
           alert(`Merci d'indiquer un nombre d'article compris entre 1 et 100`);
-          cartItemQty.value = productQty;
-        }
-        else if (cartItemQty.value == '') {
-          alert(`Quantité incorrect`);
-          cartItemQty.value = productQty;
         }
         else {
           productQty = cartItemQty.value;
@@ -199,19 +194,28 @@ const apiAsync = async () => {
     document.querySelector('.cart__price #totalPrice').textContent = totalPrice;
   }
   catch (error) {
-    console.error(error);
+    alert(error)
   }
 }
 //End of the API Async Function
 
 //Launch the apiAsync function
 apiAsync();
+/* -- End of 1st Part of the Code -- /*
 
-/* // -- Const dedicated to Regex Verification Method -- //
-const regexFirstName = /[a-zA-ZàáâćèéêëîïòóôùúûüçÀÁÂÄÈÉÊËÎÏÔÖÛÜÇŒÆ '-]+$/;
-const regexLastName = /[a-zA-ZàáâćèéêëîïòóôùúûüçÀÁÂÄÈÉÊËÎÏÔÖÛÜÇŒÆ '-]+$/;
-const regexCity = /[a-zA-ZàáâćèéêëîïòóôùúûüçÀÁÂÄÈÉÊËÎÏÔÖÛÜÇŒÆ '-]+$/;
-const regexAddress = /^[A-Za-z0-9'\.\-\s\,]/; -- */
+
+/* -------------------------------- 2nd Part of the Code -------------------------------- */
+/* -- This code Part focus on checking the form part and seding the products and contact information to the API -- */
+
+/* -- Variable Init Declarations -- */
+let orderId = "";
+let contact = {};
+
+// -- Const dedicated to Regex Verification Method -- //
+const regexFirstName = /^[A-Za-z\é\è\ê\-]+$/;
+const regexLastName = regexFirstName;
+const regexCity = regexFirstName;
+const regexAddress = /^[a-zA-Z0-9.,-_ ]{5,50}[ ]{0,2}$/;
 const regexEmail = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
 
 // Associate specific variables with a DOM element
@@ -238,106 +242,69 @@ checkSessionStorage(address, 'address');
 checkSessionStorage(city, 'city');
 checkSessionStorage(email, 'email');
 
-/* //-- Regex Function verification --
-function regexTest(rxIdentifier, identifier, idSelector, keyName) {
-  if (rxIdentifier.test(identifier.value) != true) {
-    document.querySelector(idSelector).textContent = `${identifier.value} n'est pas valide !`;
-    return false;
-  }
-  else {
-    document.querySelector(idSelector).textContent = "";
-    sessionStorage.removeItem(keyName);
-    sessionStorage.setItem(keyName, identifier.value)
-    return true;
-  }
-}*/
-
 // Function to test all the contact Value except email
-const validTest = (identifier, idSelector, keyName) => {
-  if (identifier.value !== "") {
-    sessionStorage.removeItem(keyName);
-    sessionStorage.setItem(keyName, identifier.value)
-    return true;
-  }
-  else {
+const testRegex = (identifier, regexName, idSelector, keyName) => {
+  if (regexName.test(identifier.value) != true) {
     document.querySelector(idSelector).textContent = `${identifier.value} n'est pas valide !`;
     return false;
+  }
+  else {
+    sessionStorage.removeItem(keyName);
+    sessionStorage.setItem(keyName, identifier.value)
+    document.querySelector(idSelector).textContent = ``;
+    return true;
   }
 }
 
-// Function to test the email regex
-const validEmail = () => {
-  if (regexEmail.test(email.value) != true) {
-    document.querySelector(`#emailErrorMsg`).textContent = `${email.value} n'est pas valide !`;
-    return false
+
+/* -- Function to send the contact object & products array to the API's BackEnd-- */
+const sendToServer = async () => {
+  //Initialise the const to define the sendind the POST object 
+  const settings = {
+    method: 'POST',
+    body: JSON.stringify({ contact, products }),
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    }
+  };
+
+  //Call the appi with the settings
+  try {
+    const fetchResponse = await fetch(`http://localhost:3000/api/products/order`, settings);
+    const data = await fetchResponse.json();
+    orderId = data.orderId;
+
+    // Check if the OrderId has been modified, clear the local storage then send the user to the confirmation page.
+    if (orderId != "") {
+      localStorage.clear();
+      location.href = "confirmation.html?id=" + orderId;
+    }
+    else {
+      throw new Error('Le numéro de commande présente un problème, merci de réessayer ultérieurement')
+    }
+  } catch (error) {
+    alert(error)
   }
-  else {
-    sessionStorage.removeItem('email');
-    sessionStorage.setItem('email', email.value)
-    return true;
-  }
+
 }
 
 // Function that post the contact object and products array to the back end
-const sendToServer = async () => {
-  const sendToServer = fetch("http://localhost:3000/api/products/order", {
-    method: "POST",
-    body: JSON.stringify({ contact, products }),
-    headers: {
-      "Content-Type": "application/json",
-    },
-  })
-    // Récupération et stockage de la réponse de l'API (orderId)
-    .then((response) => {
-      return response.json();
-    })
-    .then((data) => {
-      orderId = data.orderId;
-      console.log(data.orderId);
-      // Si l'orderId a bien été récupéré, on redirige l'utilisateur vers la page de Confirmation
-      if (orderId != "") {
-        location.href = "confirmation.html?id=" + orderId;
-      }
-      else {
-        console.log(`OrderId [${orderId}] pas bon`)
-      }
-    });
-
-
-}
-
 document.querySelector('#order').addEventListener('click', (evt) => {
   evt.preventDefault();
-
-  /* //-- Part of Code include Regex verification instead of classic method verification -- 
-  if (regexTest(regexFirstName, firstName, '#firstNameErrorMsg', 'firstName') &&
-    regexTest(regexLastName, lastName, '#lastNameErrorMsg', 'lastName') &&
-    regexTest(regexCity, city, '#cityErrorMsg', 'city') &&
-    regexTest(regexEmail, email, '#emailErrorMsg', 'email') &&
-    regexTest(regexAddress, address, '#addressErrorMsg', 'address')) {
-    console.log('ok')
-  }*/
-
-  if (validTest(firstName, '#firstNameErrorMsg', 'firstName')
-    && validTest(lastName, '#lastNameErrorMsg', 'lastName')
-    && validTest(city, '#cityErrorMsg', 'city')
-    && validTest(address, '#addressErrorMsg', 'address')
-    && validEmail()) {
+  if (testRegex(firstName, regexFirstName, '#firstNameErrorMsg', 'firstName')
+    && testRegex(lastName, regexLastName, '#lastNameErrorMsg', 'lastName')
+    && testRegex(city, regexCity, '#cityErrorMsg', 'city')
+    && testRegex(address, regexAddress, '#addressErrorMsg', 'address')
+    && testRegex(email, regexEmail, '#emailErrorMsg', 'email')) {
 
     contact.firstName = firstName.value;
     contact.lastName = lastName.value;
     contact.city = city.value;
     contact.address = address.value;
     contact.email = email.value;
-    console.log(contact)
-    console.log(contact.firstName)
     sendToServer()
-    console.log('ok')
   }
-  else {
-    console.log('nok')
-  }
-
 })
 
 
