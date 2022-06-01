@@ -9,6 +9,12 @@ let allArticles = [];
 let totalArticle = 0;
 let products = [];
 
+/* -- Condition checking if the localStorage (the cart) is empty. Then send a message and get the user back the index -- */
+if (localStorage.length == 0) {
+  alert(`Le panier est vide, n'hésitez pas à consulter notre page produit`);
+  location.href = "index.html";
+}
+
 /* -- Variable Dictionnary of english colors to french -- */
 const colorsDictionnary = {
   'blue': 'Bleu',
@@ -57,6 +63,7 @@ const apiAsync = async () => {
       const productColor = cartItems[1];
       let productQty = cartItems[2];
       let cart = [productId, productColor, productQty];
+
 
       //init the fetch on specific product add on cart
       let response = await fetch(getAllProducts + productId);
