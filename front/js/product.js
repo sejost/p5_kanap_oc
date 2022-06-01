@@ -128,9 +128,9 @@ const apiAsync = async () => {
         })
     }
     /* -- Catch and display error message if so --*/
-    catch {
-        console.error(error)
-        alert(`Erreur : ${error.message}, lors du chargement de la page`)
+    catch (error) {
+        alert(`Erreur lors du chargement de la page`)
+        location.href = "index.html";
     }
 }
 apiAsync()
