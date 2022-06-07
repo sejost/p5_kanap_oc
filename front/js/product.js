@@ -93,13 +93,25 @@ const apiAsync = async () => {
             /* -- Function to add a new quantity of products in an existing product item cart-- */
             const addToCart = () => {
                 let idValues = localStorage.getItem(keyName);
-                const cartItemSplitted = idValues.split(',');
-                localStorage.removeItem(keyName)
-                cart.push(pageId);
-                cart.push(productColor);
-                cart.push(parseInt(productQty) + parseInt(cartItemSplitted[2]));
-                localStorage.setItem(keyName, cart);
-                displayResult();
+                const cartItems = idValues.split(',');
+                if ((parseInt(productQty) + parseInt(cartItems[2])) > 100) {
+                    alert(`Attention, votre panier contient déjà ${cartItems[2]} article·s de cette couleur, vous ne pouvez pas dépasser les 100`)
+                    localStorage.removeItem(keyName)
+                    cart.push(pageId);
+                    cart.push(productColor);
+                    productQty = cartItems[2];
+                    document.querySelector('#quantity').value = cartItems[2];
+                    cart.push(productQty);
+                    localStorage.setItem(keyName, cart);
+                }
+                else {
+                    localStorage.removeItem(keyName)
+                    cart.push(pageId);
+                    cart.push(productColor);
+                    cart.push(parseInt(productQty) + parseInt(cartItems[2]));
+                    localStorage.setItem(keyName, cart);
+                    displayResult();
+                }
             }
 
             /* -- Function to display the confirmation adding to cart message-- */
@@ -111,7 +123,6 @@ const apiAsync = async () => {
                     alert(`Votre article a bien été ajouté au panier`)
                 }
             }
-
             /* -- Main condition in the event listener to be authorized to add product in a cart -- */
             if (productQty == 0 || productQty > 100 || productQty < 0) {
                 alert(`Merci d'indiquer un nombre d'article compris entre 1 et 100`);
@@ -126,6 +137,7 @@ const apiAsync = async () => {
                 newCart();
             }
         })
+
     }
     /* -- Catch and display error message if so --*/
     catch (error) {
@@ -134,4 +146,5 @@ const apiAsync = async () => {
     }
 }
 apiAsync()
+
 
